@@ -1,0 +1,20 @@
+__pycache__/
+
+# IDEs
+.idea
+
+
+
+### venv ###
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+venv/
+pip-selfcheck.json
+prometheus_multiproc_dir
