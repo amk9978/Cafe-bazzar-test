@@ -1,0 +1,67 @@
+Main Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. Exit
+Select a number from shown menu and enter. For example 1 is for help.
+Main Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. ExitSelect model:
+1. City
+2. Roadid=?
+name=?
+City with id=21 added!
+Select your next action
+1. Add another City
+2. Main Menuid=?
+name=?
+City with id=251 added!
+Select your next action
+1. Add another City
+2. Main Menuid=?
+name=?
+City with id=361 added!
+Select your next action
+1. Add another City
+2. Main MenuMain Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. ExitSelect model:
+1. City
+2. Roadid=?
+name=?
+from=?
+to=?
+through=?
+speed_limit=?
+length=?
+bi_directional=?
+Road with id=1 added!
+Select your next action
+1. Add another Road
+2. Main MenuMain Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. ExitKashan:Qom via Road T-K: Takes 00:07:30
+Main Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. ExitSelect model:
+1. City
+2. Roadcannot unpack non-iterable int object
+Main Menu - Select an action:
+1. Help
+2. Add
+3. Delete
+4. Path
+5. Exit
