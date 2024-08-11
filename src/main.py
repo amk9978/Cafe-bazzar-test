@@ -1,3 +1,4 @@
+import ast
 from collections import defaultdict
 from datetime import timedelta
 from typing import List, Dict, DefaultDict
@@ -70,10 +71,10 @@ def add_road() -> int:
     from_inp = int(input("from=?\n"))
     to_inp = int(input("to=?\n"))
     th_cities = {from_inp}
-    through_inp = input("through=?\n")[1:-1].strip().split(",")
-    if len(through_inp) > 1:
-        for city_id in through_inp:
-            th_cities.add(int(city_id))
+    through_inp = input("through=?\n")
+    through_list = ast.literal_eval(through_inp)
+    for city_id in through_list:
+        th_cities.add(int(city_id))
     th_cities.add(to_inp)
     speed_limit = int(input("speed_limit=?\n"))
     length = int(input("length=?\n"))
@@ -105,15 +106,10 @@ def add_road() -> int:
 def run_add(add_command: int):
     if add_command == 1:
         id = add_city()
-        model = "City"
+        output_text = "City with id=%d added!\nSelect your next action\n1. Add another City\n2. Main Menu\n" % id
     else:
         id = add_road()
-        model = "Road"
-    output_text = "%s with id=%d added!\nSelect your next action\n1. Add another %s\n2. Main Menu\n" % (
-        model,
-        id,
-        model,
-    )
+        output_text = "Road with id=%d added!\nSelect your next action\n1. Add another Road\n2. Main Menu\n" % id
     new_command = int(input(output_text))
     if new_command == 1:
         run_add(add_command=add_command)
@@ -123,11 +119,12 @@ def delete_city() -> int:
     city_id = int(input())
     if city_id in city_storage:
         for road_id, road in road_storage.items():
-            # road.through = [-1 if city == city_id else city for city in road.through]
-            road.through.remove(city_id)
+            road.through = [-1 if city == city_id else city for city in road.through]
+            # road.through.remove(city_id)
 
         del city_roads[city_id]
         del city_storage[city_id]
+
     else:
         raise ValueError("City with id %d not found!" % city_id)
     return city_id
@@ -154,30 +151,37 @@ def run_delete(del_command: int):
     try:
         if del_command == 1:
             id = delete_city()
-            model = "City"
+            print("City:%d deleted!" % id)
         else:
             id = delete_road()
-            model = "Road"
-        print("%s:%d deleted!" % (model, id))
+            print("Road:%d deleted!" % id)
+
     except ValueError as e:
         print(e)
 
 
 def find_roads(origin: int, dest: int) -> List[Road]:
     origin_roads = city_roads[origin]
-
     valid_roads = []
 
     for road in origin_roads:
-        if road.id in road_storage:
-            if dest in road.through:
-                origin_index = road.through.index(origin)
-                dest_index = road.through.index(dest)
+        if dest in road.through:
+            origin_index = road.through.index(origin)
+            dest_index = road.through.index(dest)
+            null_indices = [index for index, value in enumerate(road.through) if value == -1]
 
-                if origin_index < dest_index:
-                    valid_roads.append(road)
-                elif road.bi_directional == 1 and dest_index < origin_index:
-                    valid_roads.append(road)
+            flag = False
+            for index in null_indices:
+                if origin < index < dest or dest < index < origin:
+                    flag = True
+                    break
+            if flag:
+                break
+
+            if origin_index < dest_index:
+                valid_roads.append(road)
+            elif road.bi_directional == 1 and dest_index < origin_index:
+                valid_roads.append(road)
 
     return valid_roads
 
