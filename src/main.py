@@ -89,10 +89,16 @@ def add_road() -> int:
         length=length,
         bi_directional=bi_directional,
     )
-    road_storage[inp_id] = road
+
+    if inp_id in road_storage:
+        prev_road = road_storage[inp_id]
+        for city in prev_road.through:
+            city_roads[city].remove(prev_road)
+
     for city in road.through:
         city_roads[city].append(road)
 
+    road_storage[inp_id] = road
     return inp_id
 
 
@@ -114,38 +120,34 @@ def run_add(add_command: int):
 
 
 def delete_city() -> int:
-    inp_id = int(input())
-    if inp_id in city_storage:
-        ss = list(road_storage.keys())
-        for road_id in ss:
-            road = road_storage[road_id]
-            for city in road.through:
-                if city == inp_id:
-                    del_road(road_id)
-                    break
+    city_id = int(input())
+    if city_id in city_storage:
+        for road_id, road in road_storage.items():
+            # road.through = [-1 if city == city_id else city for city in road.through]
+            road.through.remove(city_id)
 
-        del city_roads[inp_id]
-        del city_storage[inp_id]
+        del city_roads[city_id]
+        del city_storage[city_id]
     else:
-        raise ValueError("City with id %d not found!" % inp_id)
-    return inp_id
+        raise ValueError("City with id %d not found!" % city_id)
+    return city_id
 
 
-def del_road(inp_id: int) -> int:
-    if inp_id in road_storage.keys():
-        road = road_storage[inp_id]
-        del road_storage[inp_id]
+def del_road(road_id: int) -> int:
+    if road_id in road_storage.keys():
+        road = road_storage[road_id]
+        del road_storage[road_id]
         for city in road.through:
             city_roads[city].remove(road)
     else:
-        raise ValueError("Road with id %d not found!" % inp_id)
+        raise ValueError("Road with id %d not found!" % road_id)
 
-    return inp_id
+    return road_id
 
 
 def delete_road() -> int:
     inp_id = int(input())
-    return del_road(inp_id=inp_id)
+    return del_road(road_id=inp_id)
 
 
 def run_delete(del_command: int):
@@ -163,20 +165,19 @@ def run_delete(del_command: int):
 
 def find_roads(origin: int, dest: int) -> List[Road]:
     origin_roads = city_roads[origin]
-    dest_roads = city_roads[dest]
 
-    common_roads = set(origin_roads).intersection(dest_roads)
     valid_roads = []
 
-    for road in common_roads:
-        if origin in road.through and dest in road.through:
-            origin_index = road.through.index(origin)
-            dest_index = road.through.index(dest)
+    for road in origin_roads:
+        if road.id in road_storage:
+            if dest in road.through:
+                origin_index = road.through.index(origin)
+                dest_index = road.through.index(dest)
 
-            if origin_index < dest_index:
-                valid_roads.append(road)
-            elif road.bi_directional and dest_index < origin_index:
-                valid_roads.append(road)
+                if origin_index < dest_index:
+                    valid_roads.append(road)
+                elif road.bi_directional == 1 and dest_index < origin_index:
+                    valid_roads.append(road)
 
     return valid_roads
 
@@ -191,7 +192,7 @@ def format_time(spent_time: float) -> str:
 
 def run_path(origin: int, dest: int):
     roads = find_roads(origin=origin, dest=dest)
-    roads = sorted(roads, reverse=True)
+    roads = sorted(roads, reverse=False)
     for road in roads:
         print(
             "%s:%s via Road %s: Takes %s"
