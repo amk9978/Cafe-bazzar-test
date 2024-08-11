@@ -120,7 +120,6 @@ def delete_city() -> int:
     if city_id in city_storage:
         for road_id, road in road_storage.items():
             road.through = [-1 if city == city_id else city for city in road.through]
-            # road.through.remove(city_id)
 
         del city_roads[city_id]
         del city_storage[city_id]
@@ -170,19 +169,11 @@ def find_roads(origin: int, dest: int) -> List[Road]:
             dest_index = road.through.index(dest)
             null_indices = [index for index, value in enumerate(road.through) if value == -1]
 
-            flag = False
-            for index in null_indices:
-                if origin < index < dest or dest < index < origin:
-                    flag = True
-                    break
-            if flag:
-                break
+            if any(origin < index < dest or dest < index < origin for index in null_indices):
+                continue
 
-            if origin_index < dest_index:
+            if origin_index < dest_index or (road.bi_directional and dest_index < origin_index):
                 valid_roads.append(road)
-            elif road.bi_directional == 1 and dest_index < origin_index:
-                valid_roads.append(road)
-
     return valid_roads
 
 
